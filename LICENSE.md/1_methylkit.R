@@ -19,7 +19,8 @@ myobj=methRead(file.list,
            context = "CpG",
            pipeline = "bismarkCoverage",
            header = FALSE,
-           mincov=5)
+           mincov=0)
            
-           
+meth=unite(myobj, destrand=FALSE,mc.cores=20)
+    
            
