@@ -5,6 +5,7 @@ file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",recursive=TRUE
 
 for(i in 1:length(file.list)){
 
+print(i)
 print(file.list[i])
 command <- paste("zcat", file.list[i], "| sort -k1,1 -k2,2n")
 covfile <- fread( command,
@@ -13,7 +14,8 @@ covfile <- fread( command,
                         
 bed <- covfile[,1:3]
 bed[,2] <- bed[,2]-1
-                        
+
+print("FASTA")
 fasta <- get.fasta(bed,fasta = "/home/references/hg38/hg38.fasta",bed12 = FALSE,strand = FALSE,output.fasta = FALSE,
 use.name.field = FALSE,check.zero.based = FALSE,check.chr = FALSE,check.valid = FALSE,
 check.sort = FALSE,check.merge = FALSE,verbose = TRUE)
@@ -40,6 +42,7 @@ covfile[ fasta_g_ix[,2] , 3 ] <- covfile[ fasta_g_ix[,2] , 3 ]-1
 # delete the Gs that have been pooled into "CG"
 covfile = covfile[ -fasta_cg_ix[,2] ,]
 
+print("writting")
 newfile <- file.list[i]
 newfile <- gsub("\\.cov\\.gz","\\.destranded\\.cov",newfile)
 fwrite(covfile, newfile, sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1000,nThread=12)
