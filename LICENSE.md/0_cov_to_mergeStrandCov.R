@@ -14,11 +14,27 @@ check.sort = FALSE,check.merge = FALSE,verbose = TRUE)
 
 fasta_seq <- paste(fasta$sequence,collapse="")
 
-fasta$sequence == "g"
+# identify the ones that need to be pooled "CG"
+fasta_cg_ix <- str_locate_all(pattern ='cg', head(fasta_seq))
+fasta_cg_ix <- fasta_cg_ix[[1]]
 
-# identify the ones that need to be substracted
+covfile[ fasta_cg_ix[,1] , 5 ] <- covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,2] , 5 ]
+covfile[ fasta_cg_ix[,1] , 6 ] <- covfile[ fasta_cg_ix[,1] , 6 ] + covfile[ fasta_cg_ix[,2] , 6 ]
 
-# identify the ones that need to be pooled
+# identify the ones that need to be coordinate substracted "G"
+fasta_g_ix <- str_locate_all(pattern ='g', head(fasta_seq))
+fasta_g_ix <- fasta_g_ix[[1]]
+fasta_g_ix <- fasta_g_ix[ !fasta_g_ix[,2] %in% fasta_cg_ix[,2], ]
 
-# delete the Gs that have been pooled
+covfile[ fasta_g_ix[,2] , 2 ] <- covfile[ fasta_g_ix[,2] , 2 ]-1
+covfile[ fasta_g_ix[,2] , 3 ] <- covfile[ fasta_g_ix[,2] , 3 ]-1
 
+# delete the Gs that have been pooled into "CG"
+covfile = covfile[ -fasta_cg_ix[,2] ,]
+
+
+
+
+
+# Remove the 
+rm(list = c("covfile","bed","fasta","fasta_seq","fasta_cg_ix","fasta_g_ix"))
