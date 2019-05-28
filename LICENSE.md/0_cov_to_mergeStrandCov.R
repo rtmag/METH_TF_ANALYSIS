@@ -32,9 +32,10 @@ covfile[ fasta_g_ix[,2] , 3 ] <- covfile[ fasta_g_ix[,2] , 3 ]-1
 # delete the Gs that have been pooled into "CG"
 covfile = covfile[ -fasta_cg_ix[,2] ,]
 
-
-
-
+fwrite(covfile,"/home/rtm/methmotif_cov/WGBS_MethMotif/A549/ENCFF003JVR.bismark.destranded.cov",
+       sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1000,nThread=12)
 
 # Remove the 
 rm(list = c("covfile","bed","fasta","fasta_seq","fasta_cg_ix","fasta_g_ix"))
+
+
