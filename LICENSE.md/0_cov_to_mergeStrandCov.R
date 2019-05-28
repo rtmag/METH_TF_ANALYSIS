@@ -29,8 +29,8 @@ fasta_cg_ix <- fasta_cg_ix[[1]]
 covfile[ fasta_cg_ix[,1] , 5 ] <- covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,2] , 5 ]
 covfile[ fasta_cg_ix[,1] , 6 ] <- covfile[ fasta_cg_ix[,1] , 6 ] + covfile[ fasta_cg_ix[,2] , 6 ]
 
-covfile[ fasta_cg_ix[,1] , 4 ] <- round(covfile[ fasta_cg_ix[,1] , 5 ] / 
-                                        (covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,1] , 6 ]))
+covfile[ fasta_cg_ix[,1] , 4 ] <- round((covfile[ fasta_cg_ix[,1] , 5 ] / 
+                                        (covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,1] , 6 ]))*100)
 # identify the ones that need to be coordinate substracted "G"
 fasta_g_ix <- str_locate_all(pattern ='g', head(fasta_seq))
 fasta_g_ix <- fasta_g_ix[[1]]
