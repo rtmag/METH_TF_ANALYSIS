@@ -1,9 +1,15 @@
 library(data.table)
 library(bedr)
 
-covfile <- fread( "zcat /home/rtm/methmotif_cov/WGBS_MethMotif/A549/ENCFF003JVR.bismark.cov.gz| sort -k1,1 -k2,2n",
-                        sep="\t", colClasses=c("character","integer","integer","integer","integer","integer"),
-                        data.table=FALSE, header=FALSE)
+file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",recursive=TRUE,full.names = TRUE)
+
+for(i in 1:length(file.list)){
+
+print(file.list[i])
+command <- paste("zcat", file.list[i], "| sort -k1,1 -k2,2n")
+covfile <- fread( command,
+                  sep="\t", colClasses=c("character","integer","integer","integer","integer","integer"),
+                  data.table=FALSE, header=FALSE)
                         
 bed <- covfile[,1:3]
 bed[,2] <- bed[,2]-1
@@ -21,6 +27,8 @@ fasta_cg_ix <- fasta_cg_ix[[1]]
 covfile[ fasta_cg_ix[,1] , 5 ] <- covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,2] , 5 ]
 covfile[ fasta_cg_ix[,1] , 6 ] <- covfile[ fasta_cg_ix[,1] , 6 ] + covfile[ fasta_cg_ix[,2] , 6 ]
 
+covfile[ fasta_cg_ix[,1] , 4 ] <- round(covfile[ fasta_cg_ix[,1] , 5 ] / 
+                                        (covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,1] , 6 ]))
 # identify the ones that need to be coordinate substracted "G"
 fasta_g_ix <- str_locate_all(pattern ='g', head(fasta_seq))
 fasta_g_ix <- fasta_g_ix[[1]]
@@ -32,10 +40,14 @@ covfile[ fasta_g_ix[,2] , 3 ] <- covfile[ fasta_g_ix[,2] , 3 ]-1
 # delete the Gs that have been pooled into "CG"
 covfile = covfile[ -fasta_cg_ix[,2] ,]
 
-fwrite(covfile,"/home/rtm/methmotif_cov/WGBS_MethMotif/A549/ENCFF003JVR.bismark.destranded.cov",
-       sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1000,nThread=12)
+newfile <- file.list[i]
+newfile <- gsub("\\.cov\\.gz","\\.destranded\\.cov",newfile)
+fwrite(covfile, newfile, sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1000,nThread=12)
 
 # Remove the 
-rm(list = c("covfile","bed","fasta","fasta_seq","fasta_cg_ix","fasta_g_ix"))
+rm(list = c("covfile","bed","fasta","fasta_seq","fasta_cg_ix","fasta_g_ix","newfile"))
+}
+
+
 
 
