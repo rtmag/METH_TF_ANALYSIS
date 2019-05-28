@@ -1,5 +1,6 @@
 library(data.table)
 library(bedr)
+library(stringr)
 
 file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",recursive=TRUE,full.names = TRUE)
 
