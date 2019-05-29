@@ -1,6 +1,8 @@
 library(methylKit)
-                
-file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",recursive=TRUE,full.names = TRUE)
+ 
+setwd("/home/rtm/methmotif_cov/methylkit")
+
+file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",pattern=".destranded.cov",recursive=TRUE,full.names = TRUE)
 file.list <- as.list(file.list)
 
 cells <- gsub("\\/home\\/rtm\\/methmotif_cov\\/WGBS_MethMotif\\/\\/","",file.list)
@@ -19,8 +21,8 @@ myobj=methRead(file.list,
            context = "CpG",
            pipeline = "bismarkCoverage",
            header = FALSE,
-           mincov=0)
+           mincov=5)
            
-meth=unite(myobj, destrand=FALSE,mc.cores=20)
+meth=unite(myobj, destrand=FALSE,mc.cores=20,allow.cartesian=TRUE)
     
            
