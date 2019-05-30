@@ -44,3 +44,11 @@ command <- paste("multiIntersectBed -i",
                  " -header > /home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix.bed" )
                  
 system(command)
+
+command <- paste("multiIntersectBed -i", 
+                 paste(file.list,collapse=" "),
+                " -names ",
+                 names_id,
+                 "-cluster -header > /home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix_cluster.bed" )
+                 
+system(command)
