@@ -2,7 +2,7 @@ library(data.table)
 library(bedr)
 library(stringr)
 
-file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",recursive=TRUE,full.names = TRUE)
+file.list <- list.files("/home/rtm/methmotif_cov/WGBS_MethMotif/",pattern="*cov.gz",recursive=TRUE,full.names = TRUE)
 
 for(i in 1:length(file.list)){
 
@@ -22,9 +22,9 @@ use.name.field = FALSE,check.zero.based = FALSE,check.chr = FALSE,check.valid = 
 check.sort = FALSE,check.merge = FALSE,verbose = TRUE)
 
 fasta_seq <- paste(fasta$sequence,collapse="")
-
+fasta_seq <-tolower(fasta_seq)
 # identify the ones that need to be pooled "CG"
-fasta_cg_ix <- str_locate_all(pattern ='cg', head(fasta_seq))
+fasta_cg_ix <- str_locate_all(pattern ='cg', fasta_seq)
 fasta_cg_ix <- fasta_cg_ix[[1]]
 
 covfile[ fasta_cg_ix[,1] , 5 ] <- covfile[ fasta_cg_ix[,1] , 5 ] + covfile[ fasta_cg_ix[,2] , 5 ]
@@ -51,7 +51,4 @@ fwrite(covfile, newfile, sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1
 # Remove the 
 rm(list = c("covfile","bed","fasta","fasta_seq","fasta_cg_ix","fasta_g_ix","newfile"))
 }
-
-
-
 
