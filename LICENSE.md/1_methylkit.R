@@ -1,4 +1,4 @@
-library(methylKit)
+library(methylKit) #t
  
 setwd("/home/rtm/methmotif_cov/methylkit")
 
