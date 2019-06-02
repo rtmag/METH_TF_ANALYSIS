@@ -24,5 +24,6 @@ myobj=methRead(file.list,
            mincov=5)
            
 meth=unite(myobj, destrand=FALSE,mc.cores=20,allow.cartesian=TRUE)
-    
+mydiff=calculateDiffMeth(meth,num.cores=22)
+
            
