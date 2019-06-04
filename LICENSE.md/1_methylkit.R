@@ -17,6 +17,7 @@ f1 <- file.list[dir_file_dup_ix[(i*2)-1]]
 f2 <- file.list[dir_file_dup_ix[(i*2)]]
 print(f1)
 print(f2)
+print("############")
 
 covf1 <- fread( f1,sep="\t", colClasses=c("character","integer","integer","integer","integer","integer"),
                data.table=FALSE, header=FALSE)
@@ -26,24 +27,31 @@ covf2 <- fread( f2,sep="\t", colClasses=c("character","integer","integer","integ
 bed1 <- paste(covf1[,1],covf1[,2],covf1[,3],sep="_")
 bed2 <- paste(covf2[,1],covf2[,2],covf2[,3],sep="_")
 
-ix = match(bed1,bed2)
- 
-covf1[!is.na(ix),] 
-covf2[ix[!is.na(ix)],] 
+ix <- match(bed1,bed2)
 
- 
- 
- 
-!bed2 %in% bed1
+# Add cov2 intersection counts to file cov1
+covf1[!is.na(ix),5] = covf1[!is.na(ix),5] + covf2[ix[!is.na(ix)],5] 
+covf1[!is.na(ix),6] = covf1[!is.na(ix),6] + covf2[ix[!is.na(ix)],6] 
 
-t1 = c(1,3,4,5,6,7,2,8,9,10)
-t2 = c(5,6,8,9,10,20,7)
-tix= match(t1,t2)
-# for first file
-t1[!is.na(tix)]
-# for second file
-t2[tix[!is.na(tix)]]
+# recalculate beta scores
+covf1[ !is.na(ix) , 4 ] <- round((covf1[ !is.na(ix) , 5 ] / 
+                                  (covf1[ !is.na(ix) , 5 ] + covf1[ !is.na(ix) , 6 ]))*100)
+  
+# Add cov2 outsection counts to file cov1
+jx <- !bed2 %in% bed1 
+pooled <- rbind(covf1,covf2[jx,])
 
+# write tmp file
+newfile <- gsub(".+//","",f1,perl=TRUE)
+newfile <- gsub("/.+","",newfile,perl=TRUE)
+newfile <- paste("/home/rtm/methmotif_cov/WGBS_MethMotif/",newfile,"/",newfile,".bismark.destranded.pooled.cov.TMPFILE",sep="")
+fwrite(pooled, newfile, sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1000,nThread=12)
+# sort cov1 file
+newfile_sorted <- gsub(".TMPFILE","",newfile)
+command <- paste("sort -k1,1 -k2,2n",newfile,">",newfile_sorted)
+system(command)
+# delete tmp file
+command <- paste("rm",newfile)
 }
 ###############################################################################################################################
 ###############################################################################################################################
