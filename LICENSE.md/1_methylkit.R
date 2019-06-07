@@ -45,7 +45,7 @@ pooled <- rbind(covf1,covf2[jx,])
 newfile <- gsub(".+//","",f1,perl=TRUE)
 newfile <- gsub("/.+","",newfile,perl=TRUE)
 newfile <- paste("/home/rtm/methmotif_cov/WGBS_MethMotif/",newfile,"/",newfile,".bismark.destranded.pooled.cov.TMPFILE",sep="")
-fwrite(pooled, newfile, sep="\t", row.names = FALSE, col.names = FALSE,buffMB=1000,nThread=12)
+write.table(pooled, newfile, sep="\t", row.names = FALSE, col.names = FALSE)
 # sort cov1 file
 newfile_sorted <- gsub(".TMPFILE","",newfile)
 command <- paste("sort -k1,1 -k2,2n",newfile,">",newfile_sorted)
