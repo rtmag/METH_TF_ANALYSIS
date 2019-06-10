@@ -48,4 +48,9 @@ tiles=tileMethylCounts(myobj,win.size=1000,step.size=1000)
 meth_tile=unite(tiles, destrand=FALSE,mc.cores=20,allow.cartesian=TRUE)
 mydiff_tile=calculateDiffMeth(meth_tile,num.cores=22)
 saveRDS(mydiff_tile,"mydiff_tile.rds")
-######
+################################################################################################
+################################################################################################
+################################################################################################
+meth_tmp = reorganize(meth_tile,sample.ids=meth_tile@sample.ids[1:2],treatment=1:2 )
+
+calculateDiffMeth(meth_tile,num.cores=22)
