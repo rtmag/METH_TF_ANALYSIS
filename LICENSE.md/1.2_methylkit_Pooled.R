@@ -51,6 +51,22 @@ saveRDS(mydiff_tile,"mydiff_tile.rds")
 ################################################################################################
 ################################################################################################
 ################################################################################################
-meth_tmp = reorganize(meth_tile,sample.ids=meth_tile@sample.ids[1:2],treatment=1:2 )
 
-calculateDiffMeth(meth_tile,num.cores=22)
+
+i_matrix = combn(1:16,2)
+
+for(ix in 1:dim(i_matrix)[2]){
+  meth_tmp = reorganize(meth_tile,
+                        sample.ids=meth_tile@sample.ids[ c(i_matrix[1,ix],i_matrix[2,ix]) ],
+                        treatment=c(i_matrix[1,ix],i_matrix[2,ix]) )
+  
+  mydiff_tmp = calculateDiffMeth(meth_tmp,num.cores=22)
+  
+  filename = paste(meth_tile@sample.ids[ i_matrix[1,ix] ],
+                   "_VS_",
+                   meth_tile@sample.ids[ i_matrix[2,ix] ],
+                   ".tiles.mydiff.txt",sep="")
+  write.table(mydiff_tmp,filename,sep="\t", row.names = FALSE, col.names = FALSE)
+}
+
+####
