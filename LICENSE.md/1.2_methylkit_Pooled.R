@@ -42,5 +42,10 @@ myobj=methRead(file.list,
            
 meth=unite(myobj, destrand=FALSE,mc.cores=20,allow.cartesian=TRUE)
 mydiff=calculateDiffMeth(meth,num.cores=22)
-
+saveRDS(mydiff,"mydiff.rds")
 ################################################
+tiles=tileMethylCounts(myobj,win.size=1000,step.size=1000)
+meth_tile=unite(tiles, destrand=FALSE,mc.cores=20,allow.cartesian=TRUE)
+mydiff_tile=calculateDiffMeth(meth_tile,num.cores=22)
+saveRDS(mydiff_tile,"mydiff_tile.rds")
+######
