@@ -63,10 +63,13 @@ quy <- read.table("methylated_TFBS_quy_inMotif.txt")
 quy <- as.character(sort(quy[,1]))
 meth_tf_columns <- which(mm_header %in% quy)
 meth_tf_columns <- paste(meth_tf_columns,collapse=",")
+
 command = paste("cut -f1-5,",meth_tf_columns ," mm_tf_matrix_cluster_methTF_quy.bed",sep="")
 mm <- read.table(pipe(command),header=TRUE)
 
-mm[,6:dim(mm)[2]]
+mm_ov1 <- mm[mm[,4]>1,]
+
+methtf_counts <- rowSums(mm_ov1[,6:dim(mm_ov1)[2]])
 #########################################################################################################
 # all TB question
 (mm[1,5])
