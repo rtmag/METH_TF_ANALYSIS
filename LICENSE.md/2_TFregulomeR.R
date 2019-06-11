@@ -52,3 +52,21 @@ command <- paste("multiIntersectBed -i",
                  "-cluster -header > /home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix_cluster.bed" )
                  
 system(command)
+#########################################################################################################
+#########################################################################################################
+#########################################################################################################
+#mm <- read.table(pipe("cut -f1-5 mm_tf_matrix_cluster_methTF_quy.bed"),header=TRUE)
+mm_header <- read.table(pipe("head -n1 mm_tf_matrix_cluster_methTF_quy.bed"),header=FALSE)
+mm_header <- mm_header[1,]
+mm_header <- as.character(unlist(mm_header))
+quy <- read.table("methylated_TFBS_quy_inMotif.txt")
+quy <- as.character(sort(quy[,1]))
+meth_tf_columns <- which(mm_header %in% quy)
+meth_tf_columns <- paste(meth_tf_columns,collapse=",")
+command = paste("cut -f1-5,",meth_tf_columns ," mm_tf_matrix_cluster_methTF_quy.bed",sep="")
+mm <- read.table(pipe(command),header=TRUE)
+
+mm[,6:dim(mm)[2]]
+#########################################################################################################
+# all TB question
+(mm[1,5])
