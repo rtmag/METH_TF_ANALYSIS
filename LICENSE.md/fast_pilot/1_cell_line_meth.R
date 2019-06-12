@@ -66,24 +66,38 @@ for( i in 1:length(cells)){
   no_cpg_cell_merged <- cell_merged[which(!1:dim(cell_merged)[1] %in% hits.df[,1]),]
   write.table(no_cpg_cell_merged,
               paste("/home/rtm/methmotif_cov/cell_cluster_methylation/",cells[i],"_TFclusters_withoutCpG.bed",sep=""),
-             sep="\t", row.names = FALSE, col.names = FALSE, quote=FALSE)
+             sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
   #update merge bed clusters with cpgs in its WGBS
-  cpg_cell_merged <- cell_merged[unique(hits.df[,1]),]
+  cpg_cell_merged_ori <- cell_merged[unique(hits.df[,1]),]
   cell_merged.gr <- makeGRangesFromDataFrame(cpg_cell_merged)
+  
+  # generate pre append object
+  cpg_cell_merged <- cbind(cpg_cell_merged_ori,CpGnum=0,ReadNum=0)
   
 # For needed here
   for( j in 1:length(cells) ){
+    print(c(i,j))
+    
+    prev_names = colnames(cpg_cell_merged)
+    cpg_cell_merged <- cbind(cpg_cell_merged,newbeta=NA)
+
     hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[j]]])
     hits.df <- as.data.frame(hits)
     if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
     if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
 
-    cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
-    x = cpgs_in_bed[, .(cpgNum = .N,beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    cpgs_in_bed=wgbs[[cells[j]]][hits.df[,2]]
+    cpgs_in_bed.dt = cpgs_in_bed[, .(CpGnum = .N,ReadNum=(sum(V5)+sum(V6)),beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    if(i==j){ cpg_cell_merged$CpGnum <- cpgs_in_bed.dt$CpGnum ; cpg_cell_merged$ReadNum <- cpgs_in_bed.dt$ReadNum }
+    cpg_cell_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
+    colnames(cpg_cell_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
   }
-
+  
+  write.table(cpg_cell_merged,
+              paste("/home/rtm/methmotif_cov/cell_cluster_methylation/",cells[i],"_TFclusters_beta.bed",sep=""),
+             sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
 # ENDGAME
-# cell_merged: chr,start,end,cpgNum,betaScore1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16
+# cell_merged: chr,start,end,cpgNum,ReadNum,betaScore1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16
 }
 
 # consider how to know which is the b of the interest
