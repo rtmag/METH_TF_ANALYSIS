@@ -1,5 +1,5 @@
-
-library(methylKit) #t
+library(data.table)
+library(rtracklayer)
 options(scipen=999)
 
 setwd("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/")
@@ -23,15 +23,27 @@ file.list <- c("/home/rtm/methmotif_cov/WGBS_MethMotif/A549/A549.bismark.destran
                "/home/rtm/methmotif_cov/WGBS_MethMotif/SNU398/SNU398_WGBS_r1_bismark_bt2_pe.bismark.destranded.cov")
 
 wgbs = list()
+wgbs.gr = list()
 
 for(i in 1:length(file.list) ){
-  covfile <- fread( command,
-                  sep="\t", colClasses=c("character","integer","integer","integer","integer","integer"),
-                  data.table=FALSE, header=FALSE)
+  cell.name <- gsub("/home/rtm/methmotif_cov/WGBS_MethMotif/","",file.list[i])
+  cell.name <- gsub("\\/.+cov","",cell.name,perl=TRUE)
+  print(cell.name)
+  covfile <- fread( file.list[i],
+                  sep="\t",
+                  data.table=TRUE, header=FALSE)
+  covfile[,2] = covfile[,2]-1
+  wgbs[[cell.name]] <- covfile
+  
+  wgbs_df <- as.data.frame(covfile[,1:3])
+  colnames(wgbs_df) <- c("chr","start","end")
+  wgbs_i.gr <- makeGRangesFromDataFrame(wgbs_df)
+  wgbs.gr[[cell.name]] <- wgbs_i.gr
+
   }
 
 ######################################
-
+# TF PEAKS
 file.list <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern="_all.txt*",recursive=TRUE,full.names = TRUE)
 file.id <- data.frame( do.call( rbind, strsplit( file.list, '//' ) ) )
 file.id <- data.frame( do.call( rbind, strsplit( as.character(file.id[,2]), '_' ) ) )
@@ -42,15 +54,19 @@ for( i in 1:length(cells)){
 file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern=paste("*",cells[i],"*",sep=""))
 command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i -")
 cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
-  
+colnames(cell_merged) <- c("chr","start","end")
 
+wgbs_i.gr <- wgbs[[cells[i]]][,1:3]
+colnames(wgbs_i.gr) <- c("chr","start","end")
 
-#wgbs.dir <- paste("/home/rtm/methmotif_cov/WGBS_MethMotif/",cells[i],"/",sep="")
-#wgbs.path <- list.files(wgbs.dir,pattern="*.pooled.cov",recursive=TRUE,full.names = TRUE)
-#if( identical(wgbs.path, character(0)) ){ wgbs.path <- list.files(wgbs.dir,pattern="*destranded.cov",recursive=TRUE,full.names = TRUE) }
+wgbs_i.gr <- makeGRangesFromDataFrame(wgbs_i.gr) 
+cell_merged.gr <- makeGRangesFromDataFrame(cell_merged) 
+  
+hits <- findOverlaps(cell_merged.gr, wgbs_i.gr)
+hits.df <- as.data.frame(hits)
 
-  
-  
+library(data.table)
+mm.dt <- as.data.table(mm)
 }
 
 
