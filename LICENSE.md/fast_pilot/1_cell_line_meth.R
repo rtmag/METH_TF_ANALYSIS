@@ -2,6 +2,8 @@ library(data.table)
 library(rtracklayer)
 options(scipen=999)
 
+system("mkdir /home/rtm/methmotif_cov/cell_cluster_methylation")
+
 setwd("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/")
 ############
 # WGBS bed cov file
@@ -51,27 +53,37 @@ file.id <- data.frame( do.call( rbind, strsplit( as.character(file.id[,2]), '_' 
 cells <- as.character(unique(file.id[,1]))
 
 for( i in 1:length(cells)){
-file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern=paste("*",cells[i],"*",sep=""))
-command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i -")
-cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
-colnames(cell_merged) <- c("chr","start","end")
-cell_merged.gr <- makeGRangesFromDataFrame(cell_merged) 
-
-hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[i]]])
-hits.df <- as.data.frame(hits)
-if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
-if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
-
-cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
-x = cpgs_in_bed[, .(cpgNum = .N,beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+  file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern=paste("*",cells[i],"*",sep=""))
+  command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i -")
+  cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
+  colnames(cell_merged) <- c("chr","start","end")
+  cell_merged.gr <- makeGRangesFromDataFrame(cell_merged) 
   
-x= head(cpgs_in_bed,500)
-x1 = head(hits.df,500)
-t1=x[, .(cpgNum = .N,beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = x1[,1] ]
-#data table aggregate fast
-dat[, .(count = .N, var = sum(VAR)), by = MNTH]
+  hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[i]]])
+  hits.df <- as.data.frame(hits)
+  
+  #save bed clusters without CpGs in its own WGBS
+  no_cpg_cell_merged <- cell_merged[which(!1:dim(cell_merged)[1] %in% hits.df[,1]),]
+  write.table(no_cpg_cell_merged,
+              paste("/home/rtm/methmotif_cov/cell_cluster_methylation/",cells[i],"_TFclusters_withoutCpG.bed",sep=""),
+             sep="\t", row.names = FALSE, col.names = FALSE, quote=FALSE)
+  #update merge bed clusters with cpgs in its WGBS
+  cpg_cell_merged <- cell_merged[unique(hits.df[,1]),]
+  cell_merged.gr <- makeGRangesFromDataFrame(cpg_cell_merged)
+  
+# For needed here
+  for( j in 1:length(cells) ){
+    hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[j]]])
+    hits.df <- as.data.frame(hits)
+    if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
+    if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
+
+    cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
+    x = cpgs_in_bed[, .(cpgNum = .N,beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+  }
 
 # ENDGAME
 # cell_merged: chr,start,end,cpgNum,betaScore1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16
 }
 
+# consider how to know which is the b of the interest
