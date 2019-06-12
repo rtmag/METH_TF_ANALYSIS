@@ -23,7 +23,7 @@ new_file <- paste(file.id[,5],file.id[,6],file.id[,8],sep="_")
 
 command = paste("awk -F\"\t\" \'{if(($2-100)<1){print $1\"\t\"1\"\t\"$3+100\"\t\"$4}else{print $1\"\t\"$2-100\"\t\"$3+100\"\t\"$4}}\' ",
     file.list,
-    " |sort -k1,1 -k2,2n|bedtools merge -i - > ",
+    "|perl -pe \'s/\\_all\\_peaks.+//g\'|perl -pe \'s/MM1.+\\_//g\' |sort -k1,1 -k2,2n|bedtools merge -i - -c 4 -o distinct > ",
      "/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",
      new_file,
      sep="")
