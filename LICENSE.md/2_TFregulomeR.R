@@ -21,7 +21,7 @@ file.id <- data.frame( do.call( rbind, strsplit( file.list, '_' ) ) )
 # Create sorted and +/- 100 BP files
 new_file <- paste(file.id[,5],file.id[,6],file.id[,8],sep="_")
 
-command = paste("awk -F\"\t\" \'{if(($2-100)<1){print $1\"\t\"1\"\t\"$3+100\"\t\"$4}else{print $1\"\t\"$2\"\t\"$3+100\"\t\"$4}}\' ",
+command = paste("awk -F\"\t\" \'{if(($2-100)<1){print $1\"\t\"1\"\t\"$3+100\"\t\"$4}else{print $1\"\t\"$2-200\"\t\"$3+100\"\t\"$4}}\' ",
     file.list,
     " |sort -k1,1 -k2,2n|bedtools merge -i - > ",
      "/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",
