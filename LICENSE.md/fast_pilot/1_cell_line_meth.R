@@ -64,9 +64,14 @@ if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
 
 cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
 x = cpgs_in_bed[, .(meth = sum(cpgs_in_bed[,5]) ), by = hits.df[,1] ]
+  
+x= head(cpgs_in_bed,500)
+x1 = head(hits.df,500)
+x[, .(meth = sum(x[,5]) ), by = x1[,1] ]
 #data table aggregate fast
 dat[, .(count = .N, var = sum(VAR)), by = MNTH]
 
 # ENDGAME
-# cell_merged: chr,start,end,cpgNum,betaScore
+# cell_merged: chr,start,end,cpgNum,betaScore1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16
 }
+
