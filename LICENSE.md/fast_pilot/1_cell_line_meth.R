@@ -52,7 +52,7 @@ file.id <- data.frame( do.call( rbind, strsplit( as.character(file.id[,2]), '_' 
 
 cells <- as.character(unique(file.id[,1]))
 
-for( i in 2:length(cells)){
+for( i in 5:length(cells)){
   file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern=paste("*",cells[i],"*",sep=""))
   command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i - -c 4 -o distinct")
   cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
