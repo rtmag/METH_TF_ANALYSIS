@@ -52,12 +52,12 @@ file.id <- data.frame( do.call( rbind, strsplit( as.character(file.id[,2]), '_' 
 
 cells <- as.character(unique(file.id[,1]))
 
-for( i in 1:length(cells)){
+for( i in 2:length(cells)){
   file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern=paste("*",cells[i],"*",sep=""))
-  command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i -")
+  command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i - -c 4 -o distinct")
   cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
-  colnames(cell_merged) <- c("chr","start","end")
-  cell_merged.gr <- makeGRangesFromDataFrame(cell_merged) 
+  colnames(cell_merged) <- c("chr","start","end","TF")
+  cell_merged.gr <- makeGRangesFromDataFrame(cell_merged[,1:3]) 
   
   hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[i]]])
   hits.df <- as.data.frame(hits)
@@ -97,7 +97,7 @@ for( i in 1:length(cells)){
               paste("/home/rtm/methmotif_cov/cell_cluster_methylation/",cells[i],"_TFclusters_beta.bed",sep=""),
              sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
 # ENDGAME
-# cell_merged: chr,start,end,cpgNum,ReadNum,betaScore1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16
+# cell_merged: chr,start,end,TF,cpgNum,ReadNum,betaScore1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16
 }
 
 # consider how to know which is the b of the interest
