@@ -55,19 +55,17 @@ file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",patt
 command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i -")
 cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
 colnames(cell_merged) <- c("chr","start","end")
-
-wgbs_i.gr <- wgbs[[cells[i]]][,1:3]
-colnames(wgbs_i.gr) <- c("chr","start","end")
-
-wgbs_i.gr <- makeGRangesFromDataFrame(wgbs_i.gr) 
 cell_merged.gr <- makeGRangesFromDataFrame(cell_merged) 
-  
-hits <- findOverlaps(cell_merged.gr, wgbs_i.gr)
+
+hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[i]]])
 hits.df <- as.data.frame(hits)
+if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
+if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
 
-library(data.table)
-mm.dt <- as.data.table(mm)
+wgbs[[cells[i]]]
+#data table aggregate fast
+dat[, .(count = .N, var = sum(VAR)), by = MNTH]
+
+# ENDGAME
+# cell_merged: chr,start,end,cpgNum,betaScore
 }
-
-
-bedt
