@@ -4,7 +4,7 @@ options(scipen=999)
 
 setwd("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/")
 ############
-# WGBS
+# WGBS bed cov file
 file.list <- c("/home/rtm/methmotif_cov/WGBS_MethMotif/A549/A549.bismark.destranded.pooled.cov",
                "/home/rtm/methmotif_cov/WGBS_MethMotif/GM12878/GM12878.bismark.destranded.pooled.cov",
                "/home/rtm/methmotif_cov/WGBS_MethMotif/H1-hESC/H1-hESC.bismark.destranded.pooled.cov",
@@ -22,24 +22,14 @@ file.list <- c("/home/rtm/methmotif_cov/WGBS_MethMotif/A549/A549.bismark.destran
                "/home/rtm/methmotif_cov/WGBS_MethMotif/SK-N-SH/SK-N-SH.bismark.destranded.pooled.cov",
                "/home/rtm/methmotif_cov/WGBS_MethMotif/SNU398/SNU398_WGBS_r1_bismark_bt2_pe.bismark.destranded.cov")
 
+wgbs = list()
 
-file.list <- as.list(file.list)
+for(i in 1:length(file.list) ){
+  covfile <- fread( command,
+                  sep="\t", colClasses=c("character","integer","integer","integer","integer","integer"),
+                  data.table=FALSE, header=FALSE)
+  }
 
-
-cells <- gsub(".+WGBS_MethMotif\\/","",file.list,perl=TRUE)
-cells <- gsub("\\/.+","",cells,perl=TRUE)
-
-cell_sample_number <- as.numeric(factor(cells))
-
-
-myobj=methRead(file.list,
-           sample.id = as.list(cells),
-           assembly = "hg38",
-           treatment = cell_sample_number,
-           context = "CpG",
-           pipeline = "bismarkCoverage",
-           header = FALSE,
-           mincov=5)
 ######################################
 
 file.list <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern="_all.txt*",recursive=TRUE,full.names = TRUE)
@@ -52,11 +42,14 @@ for( i in 1:length(cells)){
 file.cell <- list.files("/home/rtm/methmotif_cov/tfregulomeR/mm_tf_matrix/",pattern=paste("*",cells[i],"*",sep=""))
 command = paste("cat",paste(file.cell,collapse=" "),"| sort -k1,1 -k2,2n|mergeBed -i -")
 cell_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
+  
+
 
 #wgbs.dir <- paste("/home/rtm/methmotif_cov/WGBS_MethMotif/",cells[i],"/",sep="")
 #wgbs.path <- list.files(wgbs.dir,pattern="*.pooled.cov",recursive=TRUE,full.names = TRUE)
 #if( identical(wgbs.path, character(0)) ){ wgbs.path <- list.files(wgbs.dir,pattern="*destranded.cov",recursive=TRUE,full.names = TRUE) }
 
+  
   
 }
 
