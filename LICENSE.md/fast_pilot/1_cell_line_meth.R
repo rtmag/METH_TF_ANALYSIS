@@ -62,7 +62,8 @@ hits.df <- as.data.frame(hits)
 if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
 if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
 
-wgbs[[cells[i]]]
+cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
+x = cpgs_in_bed[, .(meth = sum(cpgs_in_bed[,5]) ), by = hits.df[,1] ]
 #data table aggregate fast
 dat[, .(count = .N, var = sum(VAR)), by = MNTH]
 
