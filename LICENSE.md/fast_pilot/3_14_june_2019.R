@@ -83,12 +83,15 @@ for( i in 1:length(cells)){
     hits.df <- as.data.frame(hits)
     if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
     if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
-
+#
     cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
+#
    cpgs_in_bed.dt = cpgs_in_bed[, .(CpGnum = .N,ReadNum=(sum(V5)+sum(V6)),beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1]]
-    if(i==j){ cpg_cell_merged$CpGnum <- cpgs_in_bed.dt$CpGnum ; cpg_cell_merged$ReadNum <- cpgs_in_bed.dt$ReadNum }
+#
+ cpg_cell_merged$CpGnum <- cpgs_in_bed.dt$CpGnum ; 
+    cpg_cell_merged$ReadNum <- cpgs_in_bed.dt$ReadNum 
     cpg_cell_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
-    colnames(cpg_cell_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
+    colnames(cpg_cell_merged) <- c(prev_names,paste(cells[i],"_beta",sep="") )
   
   
   write.table(cpg_cell_merged,
