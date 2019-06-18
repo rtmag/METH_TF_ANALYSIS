@@ -69,7 +69,7 @@ for( i in 1:length(cells)){
              sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
   #update merge bed clusters with cpgs in its WGBS
   cpg_cell_merged_ori <- cell_merged[unique(hits.df[,1]),]
-  cell_merged.gr <- makeGRangesFromDataFrame(cpg_cell_merged)
+  cell_merged.gr <- makeGRangesFromDataFrame(cpg_cell_merged_ori)
   
   # generate pre append object
   cpg_cell_merged <- cbind(cpg_cell_merged_ori,CpGnum=0,ReadNum=0)
