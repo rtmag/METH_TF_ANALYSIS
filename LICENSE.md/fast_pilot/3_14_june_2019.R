@@ -137,5 +137,32 @@ hyper_cpg_merged <- cbind(hyper_merged)
 
 saveRDS(hyper_cpg_merged,"/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/HyperTFBS_methMatrix.rds")
 
+################
+
+command = "cat /home/rtm/methmotif_cov/cell_cluster_methylation_2nd/*TFclusters_beta.bed|awk -F'\t' '{if($7<21){print $0}}'|grep -v 'CpGnum'| sort -k1,1 -k2,2n|mergeBed -i - "
+hypo_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
+colnames(hypo_merged) <- c("chr","start","end")
+hypo_merged.gr <- makeGRangesFromDataFrame(hypo_merged[,1:3]) 
+hypo_cpg_merged <- cbind(hypo_merged)
+
+# get the WGBS for the merged final bed one
+  for( j in 1:length(cells) ){
+    print(j)
+    
+    prev_names = colnames(hypo_cpg_merged)
+    hypo_cpg_merged <- cbind(hypo_cpg_merged,newbeta=NA)
+
+    hits <- findOverlaps(hypo_merged.gr, wgbs.gr[[cells[j]]])
+    hits.df <- as.data.frame(hits)
+    if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
+    if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
+
+    cpgs_in_bed=wgbs[[cells[j]]][hits.df[,2]]
+    cpgs_in_bed.dt = cpgs_in_bed[, .(beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    hypo_cpg_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
+    colnames(hypo_cpg_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
+  }
+
+saveRDS(hypo_cpg_merged,"/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/hypoTFBS_methMatrix.rds")
 
 
