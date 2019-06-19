@@ -98,3 +98,44 @@ for( i in 1:length(cells)){
               paste("/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/",cells[i],"_TFclusters_beta.bed",sep=""),
              sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
 }
+
+
+file.list <- list.files("/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/",pattern="*TFclusters_beta.bed",
+                        recursive=TRUE,full.names = TRUE)
+
+file.id <- data.frame( do.call( rbind, strsplit( file.list, '//' ) ) )
+file.id <- data.frame( do.call( rbind, strsplit( as.character(file.id[,2]), '_' ) ) )
+
+cells <- as.character(unique(file.id[,1]))
+
+# merge all TF clusters
+file.cell <- list.files("/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/",pattern=paste(cells[i],"_TFclusters_beta.bed",sep=""))
+ 
+command = "cat /home/rtm/methmotif_cov/cell_cluster_methylation_2nd/*TFclusters_beta.bed|awk -F'\t' '{if($7>79){print $0}}'|grep -v 'CpGnum'| sort -k1,1 -k2,2n|mergeBed -i - "
+hyper_merged <- read.table(pipe(command),stringsAsFactors=FALSE,sep="\t")
+colnames(hyper_merged) <- c("chr","start","end")
+hyper_merged.gr <- makeGRangesFromDataFrame(hyper_merged[,1:3]) 
+hyper_cpg_merged <- cbind(hyper_merged)
+
+# get the WGBS for the merged final bed one
+  for( j in 1:length(cells) ){
+    print(j)
+    
+    prev_names = colnames(hyper_cpg_merged)
+    hyper_cpg_merged <- cbind(hyper_cpg_merged,newbeta=NA)
+
+    hits <- findOverlaps(hyper_merged.gr, wgbs.gr[[cells[j]]])
+    hits.df <- as.data.frame(hits)
+    if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
+    if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
+
+    cpgs_in_bed=wgbs[[cells[j]]][hits.df[,2]]
+    cpgs_in_bed.dt = cpgs_in_bed[, .(beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    hyper_cpg_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
+    colnames(hyper_cpg_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
+  }
+
+saveRDS(hyper_cpg_merged,"/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/HyperTFBS_methMatrix.rds")
+
+
+
