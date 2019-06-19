@@ -130,7 +130,8 @@ hyper_cpg_merged <- cbind(hyper_merged)
     if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
 
     cpgs_in_bed=wgbs[[cells[j]]][hits.df[,2]]
-    cpgs_in_bed.dt = cpgs_in_bed[, .(beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    cpgs_in_bed.dt = cpgs_in_bed[, .(CpGnum = .N,ReadNum=(sum(V5)+sum(V6)),beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    cpgs_in_bed.dt[(cpgs_in_bed.dt$ReadNum/cpgs_in_bed.dt$CpGnum)<5]$beta = NA
     hyper_cpg_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
     colnames(hyper_cpg_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
   }
@@ -158,7 +159,8 @@ hypo_cpg_merged <- cbind(hypo_merged)
     if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
 
     cpgs_in_bed=wgbs[[cells[j]]][hits.df[,2]]
-    cpgs_in_bed.dt = cpgs_in_bed[, .(beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    cpgs_in_bed.dt = cpgs_in_bed[, .(CpGnum = .N,ReadNum=(sum(V5)+sum(V6)),beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
+    cpgs_in_bed.dt[(cpgs_in_bed.dt$ReadNum/cpgs_in_bed.dt$CpGnum)<5]$beta = NA
     hypo_cpg_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
     colnames(hypo_cpg_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
   }
