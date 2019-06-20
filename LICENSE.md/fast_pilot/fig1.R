@@ -49,4 +49,6 @@ for(i in 1:length(file.list) ){
   par(mfrow=c(4,4))
   for(i in 1:16){
      
+     plot(density(wgbs[[i]]$V4),main=names(wgbs)[i],ylab="Frequency",xlab="Beta-Score")
   }
+  dev.off()
