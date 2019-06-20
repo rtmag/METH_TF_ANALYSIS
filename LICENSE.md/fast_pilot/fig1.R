@@ -45,10 +45,12 @@ for(i in 1:length(file.list) ){
 
   }
   
-  pdf("16cell_betascore.pdf")
+  pdf("16cell_betascore_5readCov.pdf")
   par(mfrow=c(4,4))
   for(i in 1:16){
-     
-     plot(density(wgbs[[i]]$V4),main=names(wgbs)[i],ylab="Frequency",xlab="Beta-Score")
+     cov <- wgbs[[i]]$V5 + wgbs[[i]]$V6
+     betas <- wgbs[[i]]$V4
+     betas <- betas[cov>4]
+     plot(density(betas),main=names(wgbs)[i],ylab="Frequency",xlab="Beta-Score")
   }
   dev.off()
