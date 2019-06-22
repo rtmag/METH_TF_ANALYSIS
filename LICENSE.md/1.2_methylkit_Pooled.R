@@ -70,6 +70,8 @@ for(ix in 1:dim(i_matrix)[2]){
 }
 
 ####
+paste("chr",1:22,sep="")
+
  test_methSeg=methSeg(tiles[[1]],diagnostic.plot=TRUE,maxInt=100,minSeg=10)
 
 
