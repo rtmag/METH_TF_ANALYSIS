@@ -70,8 +70,9 @@ for(ix in 1:dim(i_matrix)[2]){
 }
 
 ####
-paste("chr",1:22,sep="")
 
- test_methSeg=methSeg(tiles[[1]],diagnostic.plot=TRUE,maxInt=100,minSeg=10)
+testdata = tiles[[1]][ as.character(getData(tiles[[1]])[,1]) %in% c(paste("chr",1:22,sep=""),"chrX","chrY"), ]
+
+ test_methSeg=methSeg(testdata ,diagnostic.plot=TRUE,maxInt=100,minSeg=10)
 
 
