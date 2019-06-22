@@ -70,3 +70,6 @@ for(ix in 1:dim(i_matrix)[2]){
 }
 
 ####
+ test_methSeg=methSeg(tiles[[1]],diagnostic.plot=TRUE,maxInt=100,minSeg=10)
+
+
