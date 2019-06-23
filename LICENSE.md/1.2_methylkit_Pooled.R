@@ -73,6 +73,19 @@ for(ix in 1:dim(i_matrix)[2]){
 
 testdata = tiles[[1]][ as.character(getData(tiles[[1]])[,1]) %in% c(paste("chr",1:22,sep=""),"chrX","chrY"), ]
 
+table(as.character(getData(tiles[[1]])[,1]))
+
+pdf("test_plots_methseg.pdf")
  test_methSeg=methSeg(testdata ,diagnostic.plot=TRUE,maxInt=100,minSeg=10)
+dev.off()
 
-
+methseg = list()
+for(i in 1:16){
+  tiles_mainchr <- tiles[[i]][ as.character(getData(tiles[[i]])[,1]) %in% c(paste("chr",1:22,sep=""),"chrX","chrY"), ]
+  filename <- paste(tiles[[i]]@sample.id,"_Segmentation_plots.pdf",sep="")
+  pdf(filename)
+  tiles_methSeg=methSeg(tiles_mainchr ,diagnostic.plot=TRUE,maxInt=100,minSeg=10)
+  dev.off()
+  methseg[[tiles[[i]]@sample.id]] <- tiles_methSeg
+  }
+  
