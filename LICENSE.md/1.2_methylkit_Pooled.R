@@ -118,7 +118,7 @@ for(i in 1:16){
   tiles_mainchr <- myobj[[i]][ as.character(getData(myobj[[i]])[,1]) %in% c(paste("chr",1:22,sep=""),"chrX","chrY"), ]
   filename <- paste("No_gp_constrain_",tiles[[i]]@sample.id,"_Segmentation_plots_cpg.pdf",sep="")
   pdf(filename)
-  tiles_methSeg=methSeg(tiles_mainchr ,diagnostic.plot=TRUE,maxInt=100,minSeg=10,G=1:4)
+  tiles_methSeg=methSeg(tiles_mainchr ,diagnostic.plot=TRUE,maxInt=100,minSeg=10)
   dev.off()
   methseg_gp_cpg[[tiles[[i]]@sample.id]] <- tiles_methSeg
   }
