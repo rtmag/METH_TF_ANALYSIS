@@ -122,7 +122,8 @@ for(i in 1:16){
   dev.off()
   methseg_gp_cpg[[tiles[[i]]@sample.id]] <- tiles_methSeg
   }
-
+####################################################################################################################
+####################################################################################################################
 methseg_5gp_cpg = list()
 for(i in 1:16){
   tiles_mainchr <- myobj[[i]][ as.character(getData(myobj[[i]])[,1]) %in% c(paste("chr",1:22,sep=""),"chrX","chrY"), ]
@@ -132,5 +133,37 @@ for(i in 1:16){
   dev.off()
   methseg_5gp_cpg[[tiles[[i]]@sample.id]] <- tiles_methSeg
   }
-###
-####
+####################################################################################################################
+####################################################################################################################
+test <- makeGRangesFromDataFrame(methseg_5gp_cpg[[1]])
+#
+hypo_list = list()
+for(i in 1:16){
+      hypo_list[[tiles[[i]]@sample.id]] <- methseg_5gp_cpg[[i]][methseg_5gp_cpg[[i]]$seg.mean<10,]
+}
+
+for(i in 1:16){print(length(hypo_list[[i]])) }
+
+hypo_uniq_list = hypo_list
+for(i in 1:16){
+  for(j in 1:16){
+    if(i!=j){
+        hits <- findOverlaps(hypo_list[[i]], hypo_list[[j]])
+        hits.df <- as.data.frame(hits)
+        matched.pos <- unique(hits.df[,1])
+        hypo_uniq_list[[i]] <- hypo_uniq_list[[i]][-matched.pos,]
+      }
+  }
+}
+
+for(i in 1:16){print(length(hypo_uniq_list[[i]])) }
+
+##
+x=0
+for(i in 1:16){
+  for(j in (i+1):16){
+    print(c(tiles[[i]]@sample.id,tiles[[j]]@sample.id))
+    x=x+1
+    }
+  }
+
