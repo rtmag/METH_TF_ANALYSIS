@@ -75,18 +75,22 @@ options(scipen=999)
 library(gplots)
 library(factoextra)
 library(RColorBrewer)
+options(bitmapType="cairo")
+
 colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 
 beta_matrix <- cpg_cell_merged[,4:dim(cpg_cell_merged)[2]]
 
-all.meth.norm = beta_matrix[complete.cases(beta_matrix),]
+#all.meth.norm = beta_matrix[complete.cases(beta_matrix),]
+all.meth.norm = beta_matrix
 colnames(all.meth.norm) <- gsub("_beta","",colnames(all.meth.norm))
 
 png("heatmap_hypometh_cells.png",width= 3.25,
   height= 3.25,units="in",
   res=1200,pointsize=4)
-heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",srtCol=90,
 labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",na.color="grey")
 dev.off()
-
+###
+#
 
