@@ -166,4 +166,21 @@ for(i in 1:16){
     x=x+1
     }
   }
+####################################################################################################################
+####################################################################################################################
+for(i in 1:16){ 
+  gr <- hypo_list[[i]]
+  df <- data.frame(seqnames=seqnames(gr),
+  starts=start(gr)-1,
+  ends=end(gr),
+  names=c(rep(".", length(gr))),
+  scores=c(rep(".", length(gr))),
+  strands=strand(gr))
+
+  file <- paste0("/home/rtm/methmotif_cov/methylkit/hypometh_regions/",tiles[[i]]@sample.id,"_hypomethylated_regions.bed")
+  write.table(df, file, quote=F, sep="\t", row.names=F, col.names=F)
+}
+
+
+
 
