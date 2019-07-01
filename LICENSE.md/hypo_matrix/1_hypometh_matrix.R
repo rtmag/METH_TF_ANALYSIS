@@ -85,6 +85,8 @@ beta_matrix <- cpg_cell_merged[,4:dim(cpg_cell_merged)[2]]
 all.meth.norm = beta_matrix
 colnames(all.meth.norm) <- gsub("_beta","",colnames(all.meth.norm))
 
+all.meth.norm <- all.meth.norm[rowSums(is.na(all.meth.norm)) != ncol(all.meth.norm),]
+
 png("heatmap_hypometh_cells.png",width= 3.25,
   height= 3.25,units="in",
   res=1200,pointsize=4)
