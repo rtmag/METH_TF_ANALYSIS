@@ -86,13 +86,28 @@ all.meth.norm = beta_matrix
 colnames(all.meth.norm) <- gsub("_beta","",colnames(all.meth.norm))
 
 all.meth.norm <- all.meth.norm[rowSums(is.na(all.meth.norm)) != ncol(all.meth.norm),]
+all.meth.norm = all.meth.norm[apply(all.meth.norm,1,sd)!=0,]
 
 png("heatmap_hypometh_cells.png",width= 3.25,
   height= 3.25,units="in",
   res=1200,pointsize=4)
 heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",srtCol=90,
-labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",na.color="grey")
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",na.color="grey",na.rm=TRUE)
 dev.off()
 ###
 #
+
+dist_no_na <- function(mat) {
+    edist <- dist(mat)
+    edist[which(is.na(edist))] <- max(edist, na.rm=TRUE) * 1.1 
+    return(edist)
+}
+
+png("heatmap_hypometh_cells.png",width= 3.25,
+  height= 3.25,units="in",
+  res=1200,pointsize=4)
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",srtCol=90,distfun=dist_no_na,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",na.color="grey",na.rm=TRUE)
+dev.off()
+###
 
