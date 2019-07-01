@@ -181,6 +181,6 @@ for(i in 1:16){
   write.table(df, file, quote=F, sep="\t", row.names=F, col.names=F)
 }
 
-
-
-
+setwd("/home/rtm/methmotif_cov/methylkit/hypometh_regions/")
+system("cat *|sort -k1,1 -k2,2n|mergeBed -i - > hypometh_regions_merged.bed")
+####################################################################################################################
