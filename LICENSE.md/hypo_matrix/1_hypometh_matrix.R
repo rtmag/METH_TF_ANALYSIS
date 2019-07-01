@@ -47,23 +47,15 @@ hypo_merged <- read.table("hypometh_regions_merged.bed",stringsAsFactors=FALSE,s
 colnames(hypo_merged) <- c("chr","start","end")
 hypo_merged.gr <- makeGRangesFromDataFrame(hypo_merged) 
 
+  cpg_cell_merged <- hypo_merged
+
 for( i in 1:length(cells)){
-  hits <- findOverlaps(hypo_merged.gr, wgbs.gr[[cells[i]]])
-  hits.df <- as.data.frame(hits)
-  
-  #update merge bed clusters with cpgs in its WGBS
-  cpg_cell_merged_ori <- hypo_merged[unique(hits.df[,1]),]
-  cell_merged.gr <- makeGRangesFromDataFrame(cpg_cell_merged_ori)
-  
-  # generate pre append object
-  cpg_cell_merged <- cbind(cpg_cell_merged_ori)
-  
-    print(i)
-    
+      print(i)
+
     prev_names = colnames(cpg_cell_merged)
     cpg_cell_merged <- cbind(cpg_cell_merged,newbeta=NA)
 
-    hits <- findOverlaps(cell_merged.gr, wgbs.gr[[cells[i]]])
+    hits <- findOverlaps(hypo_merged.gr, wgbs.gr[[cells[i]]])
     hits.df <- as.data.frame(hits)
     if(is.unsorted(hits.df[,1])){ print("hits1 is unsorted") }
     if(is.unsorted(hits.df[,2])){ print("hits2 is unsorted") }
@@ -74,5 +66,4 @@ for( i in 1:length(cells)){
 #
     cpg_cell_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
     colnames(cpg_cell_merged) <- c(prev_names,paste(cells[i],"_beta",sep="") )
-  
 }
