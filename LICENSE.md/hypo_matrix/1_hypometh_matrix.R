@@ -52,11 +52,11 @@ for( i in 1:length(cells)){
   hits.df <- as.data.frame(hits)
   
   #update merge bed clusters with cpgs in its WGBS
-  cpg_cell_merged_ori <- cell_merged[unique(hits.df[,1]),]
+  cpg_cell_merged_ori <- hypo_merged[unique(hits.df[,1]),]
   cell_merged.gr <- makeGRangesFromDataFrame(cpg_cell_merged_ori)
   
   # generate pre append object
-  cpg_cell_merged <- cbind(cpg_cell_merged_ori,CpGnum=0,ReadNum=0)
+  cpg_cell_merged <- cbind(cpg_cell_merged_ori)
   
     print(i)
     
@@ -70,15 +70,9 @@ for( i in 1:length(cells)){
 #
     cpgs_in_bed=wgbs[[cells[i]]][hits.df[,2]]
 #
-   cpgs_in_bed.dt = cpgs_in_bed[, .(CpGnum = .N,ReadNum=(sum(V5)+sum(V6)),beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1]]
+   cpgs_in_bed.dt = cpgs_in_bed[, .(beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1]]
 #
- cpg_cell_merged$CpGnum <- cpgs_in_bed.dt$CpGnum ; 
-    cpg_cell_merged$ReadNum <- cpgs_in_bed.dt$ReadNum 
     cpg_cell_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
     colnames(cpg_cell_merged) <- c(prev_names,paste(cells[i],"_beta",sep="") )
   
-  
-  write.table(cpg_cell_merged,
-              paste("/home/rtm/methmotif_cov/cell_cluster_methylation_2nd/",cells[i],"_TFclusters_beta.bed",sep=""),
-             sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
 }
