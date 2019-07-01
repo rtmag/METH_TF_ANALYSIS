@@ -46,6 +46,7 @@ cells <- gsub("/.+","",cells,perl=TRUE)
 hypo_merged <- read.table("hypometh_regions_merged.bed",stringsAsFactors=FALSE,sep="\t")
 colnames(hypo_merged) <- c("chr","start","end")
 hypo_merged.gr <- makeGRangesFromDataFrame(hypo_merged) 
+#######redo
 
   cpg_cell_merged <- hypo_merged
 
@@ -64,7 +65,7 @@ for( i in 1:length(cells)){
 #
   
     cpgs_in_bed.dt = cpgs_in_bed[, .(CpGnum = .N,ReadNum=(sum(V5)+sum(V6)),beta=round(sum(V5)*100/(sum(V5)+sum(V6))) ), by = hits.df[,1] ]
-    cpgs_in_bed.dt[(cpgs_in_bed.dt$ReadNum/cpgs_in_bed.dt$CpGnum)<10]$beta = NA #Filter by coverage
+    cpgs_in_bed.dt[(cpgs_in_bed.dt$ReadNum/cpgs_in_bed.dt$CpGnum)<5]$beta = NA #Filter by coverage
     cpg_cell_merged$newbeta[cpgs_in_bed.dt$hits.df] <- cpgs_in_bed.dt$beta
     colnames(cpg_cell_merged) <- c(prev_names,paste(cells[i],"_beta",sep="") )
 }
@@ -78,12 +79,14 @@ colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 
 beta_matrix <- cpg_cell_merged[,4:dim(cpg_cell_merged)[2]]
 
+all.meth.norm = beta_matrix[complete.cases(beta_matrix),]
+colnames(all.meth.norm) <- gsub("_beta","",colnames(all.meth.norm))
+
 png("heatmap_hypometh_cells.png",width= 3.25,
   height= 3.25,units="in",
   res=1200,pointsize=4)
-all.meth.norm = beta_matrix[complete.cases(beta_matrix),]
 heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
-labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl")
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",na.color="grey")
 dev.off()
 
 
