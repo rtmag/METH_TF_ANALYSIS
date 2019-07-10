@@ -108,16 +108,16 @@ whitin = beta_m[beta_m[,j]>80 & thr_cov,j]
 hyper = beta_m[beta_m[,j]>80 & thr_cov,]
 hypo = beta_m[beta_m[,j]<20 & thr_cov,]
   
-whitin.shannon<-apply(whitin,1,function(x){ diversity(x[!is.na(x)], index = "shannon") } )
+whitin.shannon<-diversity(whitin[!is.na(whitin)], index = "shannon") 
+whitin.shannon<-round(whitin.shannon,digits=1)
 hyper.shannon<-apply(hyper,1,function(x){ diversity(x[!is.na(x)], index = "shannon") } )
 hypo.shannon<-apply(hypo,1,function(x){ diversity(x[!is.na(x)], index = "shannon") } )
 
 shannon_obj<-rbind(data.frame(cluster="Hyper",shannon=hyper.shannon),
-                   data.frame(cluster="Hypo",shannon=hypo.shannon),
-                  data.frame(cluster="HyperWithinCell",shannon=whitin.shannon))
+                   data.frame(cluster="Hypo",shannon=hypo.shannon))
 colnames(shannon_obj) <- c("cluster","shannon")
 shannon_obj<-shannon_obj[!is.na(shannon_obj$shannon),]
 boxplot(shannon ~ cluster,add = F, vertical = TRUE, data = shannon_obj,boxlwd = 3,las=1,outline=FALSE,
-        ylab = 'Beta Shannon index',main=cellname)
+        ylab = 'Beta Shannon index',main=paste0(cellname,"\nCellHyper Shannon: ",whitin.shannon))
 }
 dev.off()
