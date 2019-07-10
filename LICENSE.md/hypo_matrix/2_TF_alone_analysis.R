@@ -85,8 +85,9 @@ for( i in 1:length(cells)){
     colnames(cpg_cell_merged) <- c(prev_names,paste(cells[j],"_beta",sep="") )
   }  
   #remove NA placements
-  write.table(cpg_cell_merged,
-              paste("/home/rtm/methmotif_cov/cell_cluster_methylation/",cells[i],"_TFclusters_beta.bed",sep=""),
+  tosave <- cpg_cell_merged[!(cpg_cell_merged$ReadNum/cpg_cell_merged$CpGnum)<5,]
+  write.table(tosave,
+              paste("/home/rtm/methmotif_cov/TFONLY_METH/",cells[i],"_TFpeakOnly_beta.bed",sep=""),
              sep="\t", row.names = FALSE, col.names = TRUE, quote=FALSE)
 # ENDGAME
 }
